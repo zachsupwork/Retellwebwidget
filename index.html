@@ -1,6 +1,33 @@
-
 <!-- Add this to your HTML -->
 <script src="https://cdn.retellai.com/sdk/web-sdk.js"></script>
+
+<!-- Add the styles for the button -->
+<style>
+  .retell-call-button {
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: system, -apple-system, sans-serif;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+  }
+  .retell-call-button:hover {
+    background-color: #1d4ed8;
+  }
+  .retell-call-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  #retell-call-widget {
+    margin: 20px 0;
+  }
+</style>
 
 <!-- Add this where you want the call widget to appear -->
 <div id="retell-call-widget"></div>
@@ -8,7 +35,17 @@
 <script>
 const widget = Retell.widget.createCallWidget({
   containerId: 'retell-call-widget',
-  accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsXzQ3MGE0NDE5ZGNmNThkYzM1YjMwYzQ3ODJhNiJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDQ3NjEsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.NI-Gw-BCkARirPiYtogtz_ku_T0z8HFXrSFFr49ncdQ'
+  accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsXzQ3MGE0NDE5ZGNmNThkYzM1YjMwYzQ3ODJhNiJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDQ3NjEsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.NI-Gw-BCkARirPiYtogtz_ku_T0z8HFXrSFFr49ncdQ',
+  renderButton: true,
+  buttonConfig: {
+    text: 'Start Call',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 17.5L20.5 12.5L15.5 7.5"/><path d="M4 12.5H20"/></svg>'
+  },
+  styles: {
+    button: 'retell-call-button'
+  }
 });
+
+// Initialize the widget immediately
+widget.mount();
 </script>
-  
