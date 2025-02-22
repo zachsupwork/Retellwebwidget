@@ -1,6 +1,39 @@
-
 <!-- Add this to your HTML -->
 <script src="https://cdn.retellai.com/sdk/web-sdk.js"></script>
+
+<!-- Default widget styles -->
+<style>
+  #retell-call-widget {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  
+  #retell-call-button {
+    background-color: #2563eb;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+  }
+  
+  #retell-call-button:hover {
+    background-color: #1d4ed8;
+  }
+
+  #retell-call-button svg {
+    width: 20px;
+    height: 20px;
+  }
+</style>
 
 <!-- Add this where you want the call widget to appear -->
 <div id="retell-call-widget"></div>
@@ -8,7 +41,12 @@
 <script>
 const widget = Retell.widget.createCallWidget({
   containerId: 'retell-call-widget',
-  accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsX2U1ZTYzOGYyMzUwZThiZGE2YmM2NTBmYTZiNSJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDQyOTMsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.OOepZ51RyuUfPh1sJ7f8HkRE2HSRajAKAmaa1MhFqWk'
+  accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsXzMyMGNiNGRhYmQzNzVlZWNkYzNmOGRjZjU0NCJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDQ1NzEsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.UDWBKhp8EGPNguSs30rPDbtboqd9h9l_E6FxooF0qOk',
+  renderButton: true, // Enable default button rendering
+  buttonConfig: {
+    // Optional: Configure button appearance
+    text: 'Start Call',
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>'
+  }
 });
 </script>
-  
