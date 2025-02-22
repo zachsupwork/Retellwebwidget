@@ -1,10 +1,20 @@
-<!-- Add this to your HTML -->
-<script src="https://cdn.retellai.com/sdk/web-sdk.js"></script>
+<!-- Retell Widget Integration -->
+<!-- Add this where you want the widget to appear -->
+<div id="retell-call-widget"></div>
+<button id="start-call-button" class="retell-call-button">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+  Start Call
+</button>
 
-<!-- Add the styles for the button -->
+<!-- Add these styles to your CSS -->
 <style>
   #retell-call-widget {
     margin: 20px 0;
+    min-height: 44px;
+    position: relative;
+    z-index: 1000;
   }
   .retell-call-button {
     background-color: #2563eb;
@@ -17,66 +27,87 @@
     font-size: 14px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     transition: background-color 0.2s;
+    min-width: 150px;
+    text-decoration: none;
   }
   .retell-call-button:hover {
     background-color: #1d4ed8;
   }
+  .retell-call-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 </style>
 
-<!-- Add this where you want the call widget to appear -->
-<div id="retell-call-widget"></div>
+<!-- Add the Retell SDK before the closing </body> tag -->
+<script src="https://cdn.retellai.com/sdk/web-sdk.js"></script>
 
+<!-- Add this initialization script after the SDK -->
 <script>
-// Create a function to initialize the widget
-function initializeRetellWidget() {
-  if (typeof Retell === 'undefined') {
-    console.error('Retell SDK not loaded');
-    return;
-  }
+  (function initializeRetellWidget() {
+    let retellClient = null;
 
-  try {
-    const widget = Retell.widget.createCallWidget({
-      containerId: 'retell-call-widget',
-      accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsX2QxYTQ0YWFlYjkzM2Q1MGFkYmMzOGMxZTlmZiJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDYxNjIsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.WiY9m1d4xhqIMveGSIW1LBAxgGRKyUIeqMVP9ov3Zo4',
-      renderButton: true,
-      buttonConfig: {
-        text: 'Connect to Agent',
-      },
-      styles: {
-        button: 'retell-call-button'
+    async function startCall() {
+      try {
+        if (!retellClient) {
+          retellClient = new Retell.RetellWebClient();
+        }
+
+        const button = document.getElementById('start-call-button');
+        button.disabled = true;
+        button.textContent = 'Connecting...';
+
+        await retellClient.startCall({
+          accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsXzZmZGRiNWM3M2JiMmZkN2FlNjMwNmQwOTIxYyJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDc0MjYsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.hrXvi7KwLjmA0LSOwHsXeLjjtMXT5H-DDyLblNPs524',
+          captureDeviceId: 'default'
+        });
+
+        button.textContent = 'End Call';
+        
+        // Set up event listeners
+        retellClient.on('call_started', () => {
+          console.log('Call started');
+          button.textContent = 'End Call';
+        });
+
+        retellClient.on('call_ended', () => {
+          console.log('Call ended');
+          button.disabled = false;
+          button.textContent = 'Start Call';
+          retellClient = null;
+        });
+
+        retellClient.on('error', (error) => {
+          console.error('Call error:', error);
+          button.disabled = false;
+          button.textContent = 'Start Call';
+          retellClient = null;
+        });
+
+      } catch (error) {
+        console.error('Error starting call:', error);
+        button.disabled = false;
+        button.textContent = 'Start Call';
+      }
+    }
+
+    function endCall() {
+      if (retellClient) {
+        retellClient.stopCall();
+        retellClient = null;
+      }
+    }
+
+    // Initialize the button click handler
+    document.getElementById('start-call-button').addEventListener('click', function() {
+      if (!retellClient) {
+        startCall();
+      } else {
+        endCall();
       }
     });
-
-    widget.mount();
-    console.log('Retell widget initialized successfully');
-  } catch (error) {
-    console.error('Error initializing Retell widget:', error);
-  }
-}
-
-// Function to load the Retell SDK
-function loadRetellSDK() {
-  // Check if the script is already loaded
-  if (typeof Retell !== 'undefined') {
-    initializeRetellWidget();
-    return;
-  }
-
-  // Create and append the script
-  const script = document.createElement('script');
-  script.src = 'https://cdn.retellai.com/sdk/web-sdk.js';
-  script.async = true;
-  script.onload = initializeRetellWidget;
-  script.onerror = () => console.error('Failed to load Retell SDK');
-  document.body.appendChild(script);
-}
-
-// Execute when the page is ready
-if (document.readyState === 'complete') {
-  loadRetellSDK();
-} else {
-  window.addEventListener('load', loadRetellSDK);
-}
+  })();
 </script>
