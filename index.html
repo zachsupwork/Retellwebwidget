@@ -33,19 +33,31 @@
 <div id="retell-call-widget"></div>
 
 <script>
-const widget = Retell.widget.createCallWidget({
-  containerId: 'retell-call-widget',
-  accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsXzcwYTQ5ZjYzOWVlZmU4NzM1NjA3MjgzMTM0NCJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDUxMTcsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.koxohU-GfvY2P3A3Nh8bvRKLSXRzx3YEca36w4nYX7o',
-  renderButton: true,
-  buttonConfig: {
-    text: 'Start Call',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 17.5L20.5 12.5L15.5 7.5"/><path d="M4 12.5H20"/></svg>'
-  },
-  styles: {
-    button: 'retell-call-button'
+// Wait for the Retell SDK to load
+window.addEventListener('load', function() {
+  if (typeof Retell !== 'undefined') {
+    initializeWidget();
+  } else {
+    // If Retell is not loaded yet, wait for it
+    const script = document.querySelector('script[src*="web-sdk.js"]');
+    script.addEventListener('load', initializeWidget);
   }
 });
 
-// Initialize the widget immediately
-widget.mount();
+function initializeWidget() {
+  const widget = Retell.widget.createCallWidget({
+    containerId: 'retell-call-widget',
+    accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsX2JjOWE5NDMxMDFmMGIyMGJiYzZlNDgyYmEzZSJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDUyMjEsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.LGfE9tmfp9OdtpLhwa5Hlec_R2CuCxnGX8WTKguWb-8',
+    renderButton: true,
+    buttonConfig: {
+      text: 'Start Call',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 17.5L20.5 12.5L15.5 7.5"/><path d="M4 12.5H20"/></svg>'
+    },
+    styles: {
+      button: 'retell-call-button'
+    }
+  });
+
+  widget.mount();
+}
 </script>
