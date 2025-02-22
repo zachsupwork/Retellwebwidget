@@ -11,6 +11,22 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Wait for the Retell SDK to load
+  function waitForRetell(callback, maxAttempts = 20) {
+    let attempts = 0;
+    const interval = setInterval(function() {
+      attempts++;
+      if (typeof RetellWebClient !== 'undefined') {
+        clearInterval(interval);
+        callback();
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        console.error('Failed to load Retell SDK');
+        alert('Failed to load Retell SDK. Please refresh the page.');
+      }
+    }, 100);
+  }
+
   let retellClient = null;
   let isInitializing = false;
   const button = document.getElementById('start-call-button');
@@ -22,6 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   async function checkMicrophonePermission() {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Media devices API not available");
+      }
+      
+      if (!window.isSecureContext) {
+        throw new Error("Secure context (HTTPS) required");
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop());
       return true;
@@ -49,13 +73,18 @@ document.addEventListener('DOMContentLoaded', function() {
         retellClient = null;
       }
 
-      retellClient = new Retell.RetellWebClient();
+      retellClient = new RetellWebClient();
       console.log('RetellWebClient created');
 
       retellClient.on('call_started', () => {
         console.log('Call started successfully');
         button.textContent = 'End Call';
         button.disabled = false;
+      });
+
+      retellClient.on('call_connecting', () => {
+        console.log('Call is connecting...');
+        isInitializing = true;
       });
 
       retellClient.on('call_ended', () => {
@@ -78,9 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(error.message || 'Call error occurred');
       });
 
-      console.log('Starting call with access token: eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsX2YxZjg4YjE1MDg0MWM4NzJkMDA2YTRiYjhmYiJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDk3MTAsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.roBUWwuF6MXx7xRoD3X7gijXATWKiojViqSP2h49WUo');
       await retellClient.startCall({
-        accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsX2YxZjg4YjE1MDg0MWM4NzJkMDA2YTRiYjhmYiJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNDk3MTAsIm5iZiI6MCwic3ViIjoiY2xpZW50In0.roBUWwuF6MXx7xRoD3X7gijXATWKiojViqSP2h49WUo',
+        accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6IndlYl9jYWxsX2MyYmI5MDMyMWI1MGQzMmMzOGRhNmJhN2ZkYSJ9LCJpc3MiOiJBUElqWGZBMzVHTmM3WHgiLCJleHAiOjE3NDAyNTAyMDksIm5iZiI6MCwic3ViIjoiY2xpZW50In0.2SWQCcgEqhduOfJeJ_CctOENHO_KdzEgaTu2jzXHDOk',
         captureDeviceId: 'default'
       });
 
@@ -107,12 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  button.addEventListener('click', function() {
-    if (!retellClient) {
-      startCall();
-    } else {
-      endCall();
-    }
+  waitForRetell(() => {
+    button.addEventListener('click', function() {
+      if (!retellClient) {
+        startCall();
+      } else {
+        endCall();
+      }
+    });
   });
 });
 </script>
